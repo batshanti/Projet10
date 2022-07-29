@@ -10,10 +10,10 @@ TYPES = [
 ]
 
 
-class Project(models.Model):
+class Projects(models.Model):
     title = models.CharField(max_length=128)
     description = models.TextField(max_length=2048)
-    type = models.CharField(choices=TYPES)
+    type = models.CharField(choices=TYPES, max_length=16)
     author = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
