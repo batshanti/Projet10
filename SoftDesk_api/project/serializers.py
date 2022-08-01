@@ -6,14 +6,6 @@ class ProjectsSerializer(ModelSerializer):
 
     class Meta:
         model = Projects
-        fields = ["title", "description", "type"]
+        fields = ["title", "description", "type", "author"]
 
-    def create(self, validated_data):
-        project = Projects(
-            title=validated_data["title"],
-            description=validated_data["description"],
-            type=validated_data["type"],
-        )
-        project.save()
 
-        return project

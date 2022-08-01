@@ -14,7 +14,15 @@ class SignupSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ['email', 'first_name', 'last_name', 'password', 'password2']
+        fields = [
+
+            'username',
+            'email',
+            'first_name',
+            'last_name',
+            'password',
+            'password2'
+        ]
 
     def validate(self, data):
         if data['password'] != data['password2']:
@@ -26,6 +34,7 @@ class SignupSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         user = User(
+            username=validated_data['username'],
             email=validated_data['email'],
             first_name=validated_data['first_name'],
             last_name=validated_data['last_name'],
@@ -36,5 +45,3 @@ class SignupSerializer(serializers.ModelSerializer):
         return user
 
 
-class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
-    username_field = User.EMAIL_FIELD
