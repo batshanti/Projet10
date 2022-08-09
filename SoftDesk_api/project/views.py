@@ -12,6 +12,6 @@ class ProjectsViewset(ModelViewSet):
         user = self.request.user
         print(user)
         if not user.is_anonymous:
-            return Projects.objects.filter(author_id=user)
+            return Projects.objects.filter(author=user)
 
         return Projects.objects.none()
