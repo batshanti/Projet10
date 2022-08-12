@@ -9,6 +9,17 @@ TYPES = [
     ('ANDROID', 'ANDROID')
 ]
 
+PERMISSION = [
+    ('restricted', 'restricted'),
+    ('all', 'all'),
+]
+
+ROLE = [
+    ('author', 'author'),
+    ('responsable', 'responsable'),
+    ('Contributor', 'Contributor')
+]
+
 
 class Projects(models.Model):
     title = models.CharField(max_length=128)
@@ -22,3 +33,11 @@ class Projects(models.Model):
 
     def __str__(self):
         return self.title
+
+
+class Contributors(models.Model):
+
+    user_id = models.ForeignKey(to=User, on_delete=models.CASCADE)
+    projet_id = models.ForeignKey(to=Projects, on_delete=models.CASCADE)
+    permission = models.CharField(max_length=50, choices=PERMISSION, default='restricted')
+    role = models.CharField(max_length=128, choices=ROLE, default="")
