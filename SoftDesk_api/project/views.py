@@ -1,8 +1,8 @@
 from django.shortcuts import render
 from django.contrib.auth.models import User
 from rest_framework.viewsets import ModelViewSet
-from project.serializers import ProjectsSerializer, ProjectsDetailSerializer, ContributorsSerializer, UserSerializer
-from project.models import Projects, Contributors
+from project.serializers import ProjectsSerializer, ProjectsDetailSerializer, ContributorsSerializer, UserSerializer, IssueslSerializer
+from project.models import Projects, Contributors, Issues
 
 
 class ProjectsViewset(ModelViewSet):
@@ -41,6 +41,19 @@ class ContributorsViewset(ModelViewSet):
 
     def get_serializer_context(self):
         context = super(ContributorsViewset, self).get_serializer_context()
+        project = Projects.objects.get(pk=self.kwargs['projects_pk'])
+        context.update({"project_id": project})
+        return context
+
+
+class IssuesViewset(ModelViewSet):
+    serializer_class = IssueslSerializer
+
+    def get_queryset(self):
+        return Issues.objects.filter(project_id=self.kwargs['projects_pk'])
+
+    def get_serializer_context(self):
+        context = super(IssuesViewset, self).get_serializer_context()
         project = Projects.objects.get(pk=self.kwargs['projects_pk'])
         context.update({"project_id": project})
         return context

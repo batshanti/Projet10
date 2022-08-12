@@ -1,14 +1,14 @@
 from django.contrib.auth.models import User
 from rest_framework import serializers
 from rest_framework.serializers import ModelSerializer, SerializerMethodField
-from project.models import Projects, Contributors
+from project.models import Projects, Contributors, Issues
 
 
 class UserSerializer(ModelSerializer):
 
     class Meta:
         model = User
-        fields = ['id', 'email']
+        fields = ['id', 'username', 'first_name', 'last_name', 'email']
 
 
 class ProjectsSerializer(ModelSerializer):
@@ -48,3 +48,20 @@ class ContributorsSerializer(ModelSerializer):
     class Meta:
         model = Contributors
         fields = ['id', 'permission', 'role', 'user_id']
+
+
+class IssueslSerializer(ModelSerializer):
+
+    class Meta:
+        model = Issues
+        fields = [
+            'title',
+            'description',
+            'tag',
+            'priority',
+            'created_time',
+            'status',
+            'project_id',
+            'author_user_id',
+            'assignee_user_id'
+        ]

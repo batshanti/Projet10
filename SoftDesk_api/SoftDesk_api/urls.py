@@ -16,7 +16,7 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from rest_framework_nested import routers
-from project.views import ProjectsViewset, ContributorsViewset
+from project.views import ProjectsViewset, ContributorsViewset, IssuesViewset
 from rest_framework_simplejwt.views import (
     TokenObtainPairView,
     TokenRefreshView,
@@ -25,10 +25,14 @@ from rest_framework_simplejwt.views import (
 
 router = routers.SimpleRouter()
 router.register(r"projects/?", ProjectsViewset, basename='projects')
-router.register(r"projects/(?P<project_id>[^/.]+)/user", ContributorsViewset, basename='users')
+
 
 users_router = routers.NestedSimpleRouter(router, r"projects/?", lookup="projects", trailing_slash=False)
 users_router.register(r"users/?", ContributorsViewset, basename="users")
+
+issues_router = routers.NestedSimpleRouter(router, r"projects/?", lookup="projects", trailing_slash=False)
+issues_router.register(r"issues/?", IssuesViewset, basename="issues")
+
 
 
 urlpatterns = [
@@ -39,32 +43,6 @@ urlpatterns = [
     path('', include('user.urls')),
     path('', include(router.urls)),
     path('', include(users_router.urls)),
+    path('', include(issues_router.urls))
 
 ]
-
-# routeur
-# router = routers.DefaultRouter()
-# router.register(r"projects", ProjectsViewset, basename="projects")
-## generates:
-# /projects/
-# /projects/{pk}/
-
-
-# user_router = routers.NestedSimpleRouter(router, r"projects", lookup="project")
-# user_router.register(r"users", ContributorsViewset, basename="users")
-## generates:
-# /projects/{project_pk}/users/
-# /projects/{project_pk}/users/{user_pk}/
-
-# issues_routeur = routers.NestedSimpleRouter(router, r"projects", lookup="project")
-# issues_routeur.register(r"issues", IssuesViewset, basename="issues")
-## generates:
-# /projects/{project_pk}/issues/
-# /projects/{project_pk}/issues/{issue_pk}/
-
-
-# comments_routeur = routers.NestedSimpleRouter(issues_routeur, r"issues", lookup="issue")
-# comments_routeur.register(r"comments", CommentsViewset, basename="comments")
-## generates:
-# /projects/{project_pk}/issues/{issue_pk}/comments/
-# /projects/{project_pk}/issues/{issue_pk}/comments/{pk}/
