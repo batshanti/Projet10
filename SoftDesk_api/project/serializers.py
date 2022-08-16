@@ -38,9 +38,19 @@ class ProjectsSerializer(ModelSerializer):
 
 class ProjectsDetailSerializer(ModelSerializer):
 
+    author = SerializerMethodField()
+
     class Meta:
         model = Projects
-        fields = ['id', 'title', 'description', 'type']
+        fields = ['id', 'title', 'description', 'type', 'author']
+
+    def get_author(self, instance):
+        query = Contributors.objects.filter(projet_id=instance.id)
+        user_ids = []
+        for Contributor in query:
+            user_ids.append(Contributor.user_id.id)
+        users = User.objects.filter(id__in=user_ids)
+        return UserSerializer(users, many=True).data
 
 
 class ContributorsSerializer(ModelSerializer):
