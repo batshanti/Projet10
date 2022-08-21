@@ -17,7 +17,7 @@ PERMISSION = [
 ROLE = [
     ('author', 'author'),
     ('responsable', 'responsable'),
-    ('Contributor', 'Contributor')
+    ('contributor', 'contributor')
 ]
 
 PRIORITY = [
@@ -57,8 +57,13 @@ class Contributors(models.Model):
 
     user_id = models.ForeignKey(to=User, on_delete=models.CASCADE)
     projet_id = models.ForeignKey(to=Projects, on_delete=models.CASCADE)
-    permission = models.CharField(max_length=50, choices=PERMISSION, default='restricted')
     role = models.CharField(max_length=128, choices=ROLE, default="")
+
+    permission = models.CharField(
+        max_length=50,
+        choices=PERMISSION,
+        default='restricted'
+    )
 
 
 class Issues(models.Model):
@@ -87,4 +92,21 @@ class Issues(models.Model):
         on_delete=models.CASCADE,
         default=author_user_id,
         related_name='issue_assignee'
+    )
+
+
+class Comments(models.Model):
+    description = models.CharField(max_length=4096)
+    created_time = models.DateTimeField(auto_now_add=True)
+
+    author_user_id = models.ForeignKey(
+        to=User,
+        on_delete=models.CASCADE,
+        related_name='comment_author'
+    )
+
+    issue_id = models.ForeignKey(
+        to=Issues,
+        on_delete=models.CASCADE,
+        related_name='comment_issue'
     )
