@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from django.contrib.auth.models import User
 from rest_framework.viewsets import ModelViewSet
+from rest_framework.permissions import IsAuthenticated
 from project.serializers import (
     ProjectsSerializer,
     ProjectsDetailSerializer,
@@ -17,17 +18,17 @@ from project.models import Projects, Contributors, Issues, Comments
 class ProjectsViewset(ModelViewSet):
     serializer_class = ProjectsSerializer
     detail_serializer_class = ProjectsDetailSerializer
+    permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
         user = self.request.user
-        if not user.is_anonymous:
-            user_contributor = Contributors.objects.filter(user_id=user)
-            project_ids = []
-            for contrib in user_contributor:
-                project_ids.append(contrib.projet_id.id)
-            return Projects.objects.filter(id__in=project_ids)
+        user_contributor = Contributors.objects.filter(user_id=user)
+        project_ids = []
 
-        return Projects.objects.all()
+        for contrib in user_contributor:
+            project_ids.append(contrib.projet_id.id)
+
+        return Projects.objects.filter(id__in=project_ids)
 
     def get_serializer_class(self):
         if self.action == 'retrieve':
