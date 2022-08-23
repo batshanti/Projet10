@@ -55,14 +55,14 @@ class Projects(models.Model):
 
 class Contributors(models.Model):
 
-    user_id = models.ForeignKey(to=User, on_delete=models.CASCADE)
-    projet_id = models.ForeignKey(to=Projects, on_delete=models.CASCADE)
+    user_id = models.ForeignKey(to=User, on_delete=models.CASCADE, related_name='user_contributor')
+    projet_id = models.ForeignKey(to=Projects, on_delete=models.CASCADE, related_name='project_contributor')
     role = models.CharField(max_length=128, choices=ROLE, default="")
 
     permission = models.CharField(
         max_length=50,
         choices=PERMISSION,
-        default='restricted'
+        default='all'
     )
 
 
@@ -78,20 +78,19 @@ class Issues(models.Model):
     project_id = models.ForeignKey(
         to=Projects,
         on_delete=models.CASCADE,
-        related_name='issues'
+        related_name='project_issue'
     )
 
     author_user_id = models.ForeignKey(
         to=User,
         on_delete=models.CASCADE,
-        related_name='issue_author'
+        related_name='author_issue'
     )
 
     assignee_user_id = models.ForeignKey(
         to=User,
         on_delete=models.CASCADE,
-        default=author_user_id,
-        related_name='issue_assignee'
+        related_name='assignee_issue'
     )
 
 

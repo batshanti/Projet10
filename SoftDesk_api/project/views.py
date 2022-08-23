@@ -7,7 +7,8 @@ from project.serializers import (
     ContributorsSerializer,
     UserSerializer,
     IssueslSerializer,
-    CommentsSerializer
+    CommentsSerializer,
+    IssuesDetailSerializer
 )
 
 from project.models import Projects, Contributors, Issues, Comments
@@ -20,7 +21,11 @@ class ProjectsViewset(ModelViewSet):
     def get_queryset(self):
         user = self.request.user
         if not user.is_anonymous:
-            return Projects.objects.filter(author=user)
+            user_contributor = Contributors.objects.filter(user_id=user)
+            project_ids = []
+            for contrib in user_contributor:
+                project_ids.append(contrib.projet_id.id)
+            return Projects.objects.filter(id__in=project_ids)
 
         return Projects.objects.all()
 
@@ -33,39 +38,29 @@ class ProjectsViewset(ModelViewSet):
 class ContributorsViewset(ModelViewSet):
     serializer_class = ContributorsSerializer
 
-    # def get_serializer_class(self):
-    #     if self.request.method == 'POST' or self.request.method == 'DELETE':
-    #         self.serializer_class = ContributorsSerializer
-    #         return self.serializer_class
-    #     return super().get_serializer_class()
-
     def get_queryset(self):
-        # contributors_project = Contributors.objects.filter(projet_id=self.kwargs['projects_pk'])
-        # user_ids = []
-        # for Contributor in contributors_project:
-        #     user_ids.append(Contributor.user_id.id)
-
-        # return User.objects.filter(id__in=user_ids)
-        return Contributors.objects.filter(projet_id=self.kwargs['projects_pk'])
-
-
-    # def get_serializer_context(self):
-    #     context = super(ContributorsViewset, self).get_serializer_context()
-    #     project = Projects.objects.get(pk=self.kwargs['projects_pk'])
-    #     context.update({"project_id": project})
-    #     return context
+        return Contributors.objects.filter(
+            projet_id=self.kwargs['projects_pk']
+        )
 
 
 class IssuesViewset(ModelViewSet):
     serializer_class = IssueslSerializer
+    detail_serializer_class = IssuesDetailSerializer
 
     def get_queryset(self):
         return Issues.objects.filter(project_id=self.kwargs['projects_pk'])
 
+    def get_serializer_class(self):
+        if self.action == 'retrieve':
+            return self.detail_serializer_class
+        return super().get_serializer_class()
+
     def get_serializer_context(self):
         context = super(IssuesViewset, self).get_serializer_context()
-        project = Projects.objects.get(pk=self.kwargs['projects_pk'])
-        context.update({"project_id": project})
+        user = User.objects.get(username=self.request.user)
+        project = Projects.objects.get(id=self.kwargs['projects_pk'])
+        context.update({'project_id': project, 'author_user_id': user})
         return context
 
 
@@ -73,4 +68,16 @@ class CommentsViewset(ModelViewSet):
     serializer_class = CommentsSerializer
 
     def get_queryset(self):
-        pass
+        return Comments.objects.filter(issue_id=self.kwargs['issues_pk'])
+
+
+
+
+
+
+        # contributors_project = Contributors.objects.filter(projet_id=self.kwargs['projects_pk'])
+        # user_ids = []
+        # for Contributor in contributors_project:
+        #     user_ids.append(Contributor.user_id.id)
+
+        # return User.objects.filter(id__in=user_ids)

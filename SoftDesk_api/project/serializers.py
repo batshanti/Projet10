@@ -71,8 +71,37 @@ class IssueslSerializer(ModelSerializer):
             'priority',
             'created_time',
             'status',
-            'project_id',
+        ]
+
+    def create(self, validated_data):
+        issue = Issues(
+            title=validated_data['title'],
+            description=validated_data['description'],
+            tag=validated_data['tag'],
+            priority=validated_data['priority'],
+            status=validated_data['status'],
+            author_user_id=self.context['author_user_id'],
+            assignee_user_id=self.context['author_user_id'],
+            project_id=self.context['project_id']
+        )
+        issue.save()
+        return issue
+
+
+class IssuesDetailSerializer(ModelSerializer):
+
+    class Meta:
+        model = Issues
+        fields = [
+            'id',
+            'title',
+            'description',
+            'tag',
+            'priority',
+            'created_time',
+            'status',
             'author_user_id',
+            'project_id',
             'assignee_user_id'
         ]
 
@@ -81,4 +110,10 @@ class CommentsSerializer(ModelSerializer):
 
     class Meta:
         model = Comments
-        fields = ['description', 'created_time', 'author_user_id', 'issue_id']
+        fields = [
+            'id',
+            'description',
+            'created_time',
+            'author_user_id',
+            'issue_id'
+        ]

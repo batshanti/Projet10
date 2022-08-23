@@ -30,9 +30,9 @@ issues_router = routers.NestedSimpleRouter(
 issues_router.register(r"issues/?", IssuesViewset, basename="issues")
 
 comments_router = routers.NestedSimpleRouter(
-    router,
-    r"projects/?",
-    lookup="projects",
+    issues_router,
+    r"issues/?",
+    lookup="issues",
     trailing_slash=False
 )
 comments_router.register(r"comments/?", CommentsViewset, basename="comments")
