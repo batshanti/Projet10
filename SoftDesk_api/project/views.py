@@ -11,14 +11,14 @@ from project.serializers import (
     CommentsSerializer,
     IssuesDetailSerializer
 )
-
+from project.permissions import ProjectPermission
 from project.models import Projects, Contributors, Issues, Comments
 
 
 class ProjectsViewset(ModelViewSet):
     serializer_class = ProjectsSerializer
     detail_serializer_class = ProjectsDetailSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, ProjectPermission]
 
     def get_queryset(self):
         user = self.request.user
@@ -38,6 +38,7 @@ class ProjectsViewset(ModelViewSet):
 
 class ContributorsViewset(ModelViewSet):
     serializer_class = ContributorsSerializer
+    permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
         return Contributors.objects.filter(
@@ -48,6 +49,7 @@ class ContributorsViewset(ModelViewSet):
 class IssuesViewset(ModelViewSet):
     serializer_class = IssueslSerializer
     detail_serializer_class = IssuesDetailSerializer
+    permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
         return Issues.objects.filter(project_id=self.kwargs['projects_pk'])
@@ -67,6 +69,7 @@ class IssuesViewset(ModelViewSet):
 
 class CommentsViewset(ModelViewSet):
     serializer_class = CommentsSerializer
+    permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
         return Comments.objects.filter(issue_id=self.kwargs['issues_pk'])
