@@ -11,7 +11,12 @@ from project.serializers import (
     CommentsSerializer,
     IssuesDetailSerializer
 )
-from project.permissions import ProjectPermission
+from project.permissions import (
+    ProjectPermission,
+    IssuePermission,
+    ContributorPermission,
+    CommentPermission
+)
 from project.models import Projects, Contributors, Issues, Comments
 
 
@@ -38,18 +43,22 @@ class ProjectsViewset(ModelViewSet):
 
 class ContributorsViewset(ModelViewSet):
     serializer_class = ContributorsSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, ContributorPermission]
 
     def get_queryset(self):
         return Contributors.objects.filter(
             projet_id=self.kwargs['projects_pk']
         )
 
+    def perform_create(self, serializer):
+        project = Projects.objects.get(id=self.kwargs['projects_pk'])
+        serializer.save(projet_id=project)
+
 
 class IssuesViewset(ModelViewSet):
     serializer_class = IssueslSerializer
     detail_serializer_class = IssuesDetailSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, IssuePermission]
 
     def get_queryset(self):
         return Issues.objects.filter(project_id=self.kwargs['projects_pk'])
@@ -69,19 +78,11 @@ class IssuesViewset(ModelViewSet):
 
 class CommentsViewset(ModelViewSet):
     serializer_class = CommentsSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, CommentPermission]
 
     def get_queryset(self):
         return Comments.objects.filter(issue_id=self.kwargs['issues_pk'])
 
-
-
-
-
-
-        # contributors_project = Contributors.objects.filter(projet_id=self.kwargs['projects_pk'])
-        # user_ids = []
-        # for Contributor in contributors_project:
-        #     user_ids.append(Contributor.user_id.id)
-
-        # return User.objects.filter(id__in=user_ids)
+    def perform_create(self, serializer):
+        issue = Issues.objects.get(id=self.kwargs['issues_pk'])
+        serializer.save(issue_id=issue, author_user_id=self.request.user)

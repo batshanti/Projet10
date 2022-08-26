@@ -117,3 +117,4 @@ class CommentsSerializer(ModelSerializer):
             'author_user_id',
             'issue_id'
         ]
+
