@@ -30,6 +30,9 @@ pip install -r requirements.txt
 ````
 python manage.py runserver
 ````
+#### Documentation de l'API :
+https://documenter.getpostman.com/view/22498429/VUr1GYPZ
+
 #### Utilisateur de test : 
 | Utilisateur | Mot de passse |
 |--|--|
